@@ -1,8 +1,20 @@
-# Python
+# ==============================================================================
+# DecisionBench .gitignore
+# ==============================================================================
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.dylib
+*.dll
+
+# C extensions
+*.c
+*.h
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -21,48 +33,97 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Virtual Environments
 .venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+.direnv/
 
-# Testing & Coverage
+# Python tooling & caches
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .tox/
 .nox/
 coverage.xml
+*.cover
+*.pyre/
+.mypy_cache/
+.pytype/
+.ruff_cache/
+.pyright/
 
 # Node & Frontend
 node_modules/
-frontend/dist/
 frontend/node_modules/
-.npm
+frontend/dist/
+frontend/build/
+.npm/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 .vite/
+.turbo/
+.parcel-cache/
 
-# Application Data & Secrets
+# Application Data & Persistent State
 data/
 backend/data/
 /app/data/
 *.db
 *.db-wal
 *.db-shm
-.secret_key
-.env
-.env.local
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
 
-# IDE & OS
+# Secrets, Environment Files & Keys
+.secret_key
+*.key
+*.pem
+*.cert
+*.crt
+.env
+.env.*
+!.env.example
+
+# IDE, Editors & OS Files
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
+*.bak
+.project
+.pydevproject
+.settings/
+
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Docker / Container local artifacts
+*.pid
+*.seed
+*.log
+docker-compose.override.yml
