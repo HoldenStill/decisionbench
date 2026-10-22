@@ -30,7 +30,7 @@ async def init_db() -> None:
                 id INTEGER PRIMARY KEY CHECK (id = 1),
                 encrypted_openrouter_key TEXT,
                 default_stage1_model TEXT NOT NULL DEFAULT 'openrouter/free',
-                default_stage2_model TEXT NOT NULL DEFAULT 'typesafe/jev-latest',
+                default_stage2_model TEXT NOT NULL DEFAULT 'typesafe/jev-router',
                 pinned_models_json TEXT DEFAULT '[]',
                 thresholds_json TEXT DEFAULT '{"reject": 0.35, "commit": 0.75}',
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -40,7 +40,14 @@ async def init_db() -> None:
         # Ensure default settings row exists
         await db.execute("""
             INSERT OR IGNORE INTO settings (id, encrypted_openrouter_key, default_stage1_model, default_stage2_model)
-            VALUES (1, '', 'openrouter/free', 'typesafe/jev-latest');
+            VALUES (1, '', 'openrouter/free', 'typesafe/jev-router');
+        """)
+
+        # Migrate legacy 'typesafe/jev-latest' settings to active 'typesafe/jev-router'
+        await db.execute("""
+            UPDATE settings 
+            SET default_stage2_model = 'typesafe/jev-router' 
+            WHERE default_stage2_model = 'typesafe/jev-latest';
         """)
 
         # Scenarios table (saved templates and presets)

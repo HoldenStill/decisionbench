@@ -121,6 +121,14 @@ def compute_question_metrics(
         deltas=deltas
     )
 
+DECISION_MODEL_ALIASES: dict[str, str] = {
+    "typesafe/jev-latest": "typesafe/jev-router",
+    "typesafe/jev": "typesafe/jev-router",
+    "jev-latest": "typesafe/jev-router",
+    "jev-router": "typesafe/jev-router",
+    "typesafe/jev-latest-decisions": "typesafe/jev-router",
+}
+
 async def call_openrouter_decisions(
     model: str,
     state: Any,
@@ -132,8 +140,9 @@ async def call_openrouter_decisions(
     Returns (raw_response_dict, stage2_telemetry).
     """
     headers = get_headers(api_key)
+    resolved_model = DECISION_MODEL_ALIASES.get(model, model)
     payload = {
-        "model": model,
+        "model": resolved_model,
         "state": state,
         "questions": questions
     }

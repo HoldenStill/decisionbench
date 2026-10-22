@@ -33,7 +33,7 @@ export const App: React.FC = () => {
   // Composer selections
   const [prompt, setPrompt] = useState('');
   const [selectedStage1Model, setSelectedStage1Model] = useState('openrouter/free');
-  const [selectedStage2Model, setSelectedStage2Model] = useState('typesafe/jev-latest');
+  const [selectedStage2Model, setSelectedStage2Model] = useState('typesafe/jev-router');
   const [comparisonModel, setComparisonModel] = useState<string | null>(null);
   const [isSweepEnabled, setIsSweepEnabled] = useState(false);
 
@@ -91,7 +91,10 @@ export const App: React.FC = () => {
       ]);
       setSettings(settingsRes);
       setSelectedStage1Model(settingsRes.default_stage1_model);
-      setSelectedStage2Model(settingsRes.default_stage2_model);
+      const stage2 = settingsRes.default_stage2_model === 'typesafe/jev-latest' 
+        ? 'typesafe/jev-router' 
+        : settingsRes.default_stage2_model;
+      setSelectedStage2Model(stage2);
       setThresholds(settingsRes.thresholds);
 
       setStage1Models(modelsRes.stage1_models);

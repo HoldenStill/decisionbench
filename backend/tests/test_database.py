@@ -21,4 +21,4 @@ async def test_settings_seeded():
         async with db.execute("SELECT default_stage1_model, default_stage2_model FROM settings WHERE id = 1;") as cursor:
             row = await cursor.fetchone()
             assert row["default_stage1_model"] == "openrouter/free"
-            assert row["default_stage2_model"] == "typesafe/jev-latest"
+            assert row["default_stage2_model"] == "typesafe/jev-router"

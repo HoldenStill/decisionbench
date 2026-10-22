@@ -81,3 +81,23 @@ async def test_compiler_endpoint(client):
     assert "compiled" in data
     assert "telemetry" in data
     assert data["telemetry"]["tokens_in"] == 120
+
+def test_robust_json_parsing_and_repair():
+    from app.services.compiler import robust_json_parse
+
+    # Test exact truncation from user scenario
+    truncated = '{ "state": "User needs to choose between self-hosting Hermes Agent on TrueNAS vs. cloud hosting. Two distinct architectural approaches with different trade-offs in cost, privacy, performance, and co'
+    repaired = robust_json_parse(truncated)
+    assert "state" in repaired
+    assert "Hermes Agent" in repaired["state"]
+
+    # Test markdown code block wrapping
+    fenced = '```json\n{"state": "Fenced state", "state_mode": "text", "questions": {}}\n```'
+    parsed_fenced = robust_json_parse(fenced)
+    assert parsed_fenced["state"] == "Fenced state"
+
+    # Test nested truncated JSON
+    nested_truncated = '{"state": "Testing", "questions": {"q1": {"type": "choice", "instructions": "Which one?", "choice_criteria": {"opt1": "Desc 1", "opt2": "Desc 2"'
+    parsed_nested = robust_json_parse(nested_truncated)
+    assert "questions" in parsed_nested
+    assert "q1" in parsed_nested["questions"]

@@ -66,3 +66,4 @@
 | 2026-10-15 | Frontend build | `npm run build` (tsc & vite) | **Passed** (0 errors) | TypeScript strict typecheck passed, production bundle emitted to `frontend/dist/`. |
 | 2026-10-15 | Container build & healthcheck | `docker build` & `docker run` | **Passed** (HTTP 200) | Multi-stage Docker build, PUID/PGID gosu privilege dropping, `/api/health` returning `status: healthy, journal_mode: wal`, and SPA `index.html` static serving verified. |
 | 2026-10-22 | Frontend build (Tutorial Modal) | `npm run build` (tsc & vite) | **Passed** (0 errors) | Implemented interactive Tutorial & Guide modal with top Header question mark trigger and multi-tab guidance. |
+| 2026-10-22 | Backend & Model Resilience | `pytest -v backend` & `npm run build` | **15 / 15 Passed** (100%) | Added alias resolution for `typesafe/jev-latest` -> `typesafe/jev-router`, `max_tokens: 4096`, OpenRouter response-healing plugin, and resilient JSON repair. |

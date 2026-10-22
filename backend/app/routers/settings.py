@@ -56,7 +56,7 @@ async def get_settings():
         masked_key=masked,
         has_env_key=has_env,
         default_stage1_model=row["default_stage1_model"] or "openrouter/free",
-        default_stage2_model=row["default_stage2_model"] or "typesafe/jev-latest",
+        default_stage2_model=row["default_stage2_model"] or "typesafe/jev-router",
         pinned_models=pinned_models,
         thresholds=ThresholdSettings(**thresholds_dict),
         updated_at=str(row["updated_at"]) if row["updated_at"] else None

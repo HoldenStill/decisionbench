@@ -87,7 +87,7 @@ class ExecuteRequest(BaseModel):
     mode: Literal["auto_compile", "direct", "sweep", "comparison"] = "auto_compile"
     raw_prompt: str | None = None
     parser_model: str | None = None
-    decision_model: str = "typesafe/jev-latest"
+    decision_model: str = "typesafe/jev-router"
     comparison_model: str | None = None
     state: Any = ""
     state_mode: Literal["text", "json"] = "text"

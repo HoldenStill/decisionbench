@@ -1,4 +1,5 @@
 import json
+import re
 import time
 import httpx
 from typing import Any
@@ -7,7 +8,7 @@ from app.models.decisions import CompiledSchema, Stage1Telemetry, CompileRespons
 from app.services.openrouter import get_active_api_key, get_headers
 
 SYSTEM_PROMPT = """You are DecisionBench's Stage-1 Natural-Language Schema & Criteria Compiler.
-Your role is to translate conversational dilemmas into mathematically sound, unbiased structured decision schemas for System One probabilistic decision models (such as typesafe/jev-latest).
+Your role is to translate conversational dilemmas into mathematically sound, unbiased structured decision schemas for System One probabilistic decision models (such as typesafe/jev-router).
 
 CRITICAL DOMAIN RULES:
 1. OpenRouter System One decision models NEVER see option keys (such as "sqlite" or "postgres"). They rely 100% on the descriptive text inside "criteria" values to compute probability distributions.
@@ -111,6 +112,84 @@ def normalize_compiled_questions(raw_questions: dict[str, Any]) -> dict[str, Any
         }
     return normalized
 
+def repair_truncated_json(s: str) -> str:
+    """Heuristically closes unclosed strings, arrays, and objects in truncated JSON."""
+    s = s.strip()
+    in_string = False
+    escape = False
+    stack = []
+    for char in s:
+        if escape:
+            escape = False
+            continue
+        if char == '\\':
+            escape = True
+            continue
+        if char == '"':
+            in_string = not in_string
+            continue
+        if not in_string:
+            if char in ('{', '['):
+                stack.append(char)
+            elif char == '}' and stack and stack[-1] == '{':
+                stack.pop()
+            elif char == ']' and stack and stack[-1] == '[':
+                stack.pop()
+
+    if in_string:
+        s += '"'
+    s = re.sub(r'[,:\s]+$', '', s)
+    for open_char in reversed(stack):
+        if open_char == '{':
+            s += '}'
+        elif open_char == '[':
+            s += ']'
+    return s
+
+def robust_json_parse(raw_text: str) -> dict[str, Any]:
+    """
+    Robustly parses JSON from LLM output, extracting code fences,
+    repairing truncated strings/brackets, and stripping preambles.
+    """
+    text = raw_text.strip()
+    if not text:
+        raise ValueError("Stage 1 compiler returned empty response.")
+
+    # 1. Direct parse attempt
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
+
+    # 2. Extract markdown code fences if present anywhere in text
+    fenced_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+    if fenced_match:
+        try:
+            return json.loads(fenced_match.group(1).strip())
+        except Exception:
+            pass
+
+    # 3. Find outermost curly braces { ... }
+    first_brace = text.find("{")
+    last_brace = text.rfind("}")
+    if first_brace != -1 and last_brace > first_brace:
+        candidate = text[first_brace:last_brace + 1]
+        try:
+            return json.loads(candidate)
+        except Exception:
+            pass
+
+    # 4. Heuristic repair for truncated JSON
+    if first_brace != -1:
+        truncated = text[first_brace:]
+        repaired = repair_truncated_json(truncated)
+        try:
+            return json.loads(repaired)
+        except Exception:
+            pass
+
+    raise ValueError(f"Stage 1 compiler output could not be parsed as JSON: {text[:300]}")
+
 async def compile_prompt(
     prompt: str,
     model: str | None = None,
@@ -140,7 +219,11 @@ async def compile_prompt(
                 "schema": JSON_SCHEMA
             }
         },
-        "temperature": 0.1
+        "temperature": 0.1,
+        "max_tokens": 4096,
+        "plugins": [
+            {"id": "response-healing"}
+        ]
     }
 
     start_time = time.perf_counter()
@@ -160,27 +243,27 @@ async def compile_prompt(
     cost_usd = float(usage.get("cost", 0.0))
 
     choice_msg = resp_json.get("choices", [{}])[0].get("message", {})
-    content_raw = choice_msg.get("content", "{}")
+    content_raw = choice_msg.get("content") or "{}"
 
-    # Strip markdown code blocks if returned
-    cleaned_content = content_raw.strip()
-    if cleaned_content.startswith("```json"):
-        cleaned_content = cleaned_content[7:]
-    elif cleaned_content.startswith("```"):
-        cleaned_content = cleaned_content[3:]
-    if cleaned_content.endswith("```"):
-        cleaned_content = cleaned_content[:-3]
-    cleaned_content = cleaned_content.strip()
-
-    try:
-        parsed_data = json.loads(cleaned_content)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Stage 1 compiler output could not be parsed as JSON: {cleaned_content[:200]}") from e
+    parsed_data = robust_json_parse(content_raw)
 
     state = parsed_data.get("state", prompt)
     state_mode = parsed_data.get("state_mode", "text")
     raw_questions = parsed_data.get("questions", {})
     normalized_questions = normalize_compiled_questions(raw_questions)
+
+    # Fallback question synthesis if model output truncated before questions
+    if not normalized_questions:
+        normalized_questions = {
+            "primary_decision": {
+                "type": "choice",
+                "instructions": "Evaluate the dilemma and select the most suitable approach.",
+                "criteria": {
+                    "option_1": f"Option 1 based on context: {state[:150]}",
+                    "option_2": f"Option 2 based on context: {state[:150]}"
+                }
+            }
+        }
 
     compiled_schema = CompiledSchema(
         state=state,

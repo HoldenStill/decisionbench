@@ -70,12 +70,12 @@ DEFAULT_STAGE1_MODELS = [
 
 DEFAULT_STAGE2_MODELS = [
     ModelItem(
-        id="typesafe/jev-latest",
-        name="Jev Latest",
-        description="TypeSafe flagship System One structured probabilistic decision model.",
+        id="typesafe/jev-router",
+        name="Jev Router (Latest)",
+        description="TypeSafe flagship System One structured decision router (auto-optimizes quality, speed, and cost).",
         stage="stage2",
         provider="TypeSafe",
-        tags=["Flagship", "System One", "Default"],
+        tags=["Flagship", "System One", "Recommended", "Default"],
         input_cost_per_m=0.50,
         output_cost_per_m=1.50,
         is_free=False,
@@ -166,7 +166,7 @@ async def list_models():
             row = await cursor.fetchone()
 
     default_s1 = row["default_stage1_model"] if row else "openrouter/free"
-    default_s2 = row["default_stage2_model"] if row else "typesafe/jev-latest"
+    default_s2 = row["default_stage2_model"] if row else "typesafe/jev-router"
 
     stage1 = []
     for m in DEFAULT_STAGE1_MODELS:

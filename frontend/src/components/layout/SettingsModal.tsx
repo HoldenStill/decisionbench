@@ -23,7 +23,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [apiKey, setApiKey] = useState('');
   const [defaultStage1, setDefaultStage1] = useState('openrouter/free');
-  const [defaultStage2, setDefaultStage2] = useState('typesafe/jev-latest');
+  const [defaultStage2, setDefaultStage2] = useState('typesafe/jev-router');
   const [rejectThreshold, setRejectThreshold] = useState(0.35);
   const [commitThreshold, setCommitThreshold] = useState(0.75);
   const [customModelSlug, setCustomModelSlug] = useState('');
@@ -36,7 +36,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   useEffect(() => {
     if (settings) {
       setDefaultStage1(settings.default_stage1_model);
-      setDefaultStage2(settings.default_stage2_model);
+      const stage2 = settings.default_stage2_model === 'typesafe/jev-latest'
+        ? 'typesafe/jev-router'
+        : settings.default_stage2_model;
+      setDefaultStage2(stage2);
       setRejectThreshold(settings.thresholds.reject);
       setCommitThreshold(settings.thresholds.commit);
       setPinnedModels(settings.pinned_models || []);

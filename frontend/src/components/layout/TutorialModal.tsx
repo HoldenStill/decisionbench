@@ -116,7 +116,7 @@ export const TutorialModal: React.FC<TutorialModalProps> = ({ isOpen, onClose })
                 </div>
                 <p className="text-zinc-300 text-[11px] leading-relaxed">
                   Unlike traditional generative LLMs that predict conversational text token-by-token,
-                  <strong> System One models</strong> (like TypeSafe's <code>typesafe/jev-latest</code>)
+                  <strong> System One models</strong> (like TypeSafe's <code>typesafe/jev-router</code> / <code>typesafe/jev-1.14</code>)
                   run on OpenRouter's Decisions API (<code>/api/alpha/decisions</code>) to compute
                   <strong> direct, calibrated probability distributions</strong> over defined choices.
                 </p>
