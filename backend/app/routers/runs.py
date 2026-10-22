@@ -1,4 +1,5 @@
 import json
+from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Response
 from app.database import get_db
 from app.models.runs import RunSummary, RunDetail, RunsListResponse
@@ -141,7 +142,7 @@ async def delete_run(run_id: str):
     return {"deleted": True, "id": run_id}
 
 @router.get("/{run_id}/export")
-async def export_run(run_id: str, format: str = Query("json", enum=["json", "markdown"])):
+async def export_run(run_id: str, format: Literal["json", "markdown"] = Query("json")):
     """Export a run as formatted JSON or a structured Markdown report."""
     detail = await get_run(run_id)
 
