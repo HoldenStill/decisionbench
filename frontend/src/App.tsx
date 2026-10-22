@@ -13,6 +13,7 @@ import {
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
 import { SettingsModal } from './components/layout/SettingsModal';
+import { TutorialModal } from './components/layout/TutorialModal';
 import { OmniComposer } from './components/omni/OmniComposer';
 import { DecisionCard } from './components/cards/DecisionCard';
 import { DirectWorkbench } from './components/builder/DirectWorkbench';
@@ -71,6 +72,7 @@ export const App: React.FC = () => {
 
   // Modals & Drawers
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isCodeDrawerOpen, setIsCodeDrawerOpen] = useState(false);
   const [codeDrawerDecision, setCodeDrawerDecision] = useState<ExecuteResponse | null>(null);
 
@@ -320,6 +322,7 @@ export const App: React.FC = () => {
         isConfigured={settings?.is_configured ?? false}
         maskedKey={settings?.masked_key ?? ''}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenTutorial={() => setIsTutorialOpen(true)}
       />
 
       {/* Main Workspace Layout */}
@@ -489,6 +492,12 @@ export const App: React.FC = () => {
           setThresholds(res.thresholds);
         }}
         onTestConnection={(k) => api.testConnection(k)}
+      />
+
+      {/* Tutorial & Guide Modal */}
+      <TutorialModal
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
       />
 
       {/* Drop-in Code & JSON Drawer */}

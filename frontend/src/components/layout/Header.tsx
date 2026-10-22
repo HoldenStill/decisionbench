@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Sparkles, Sliders, ShieldCheck, ShieldAlert, Cpu } from 'lucide-react';
+import { Settings, Sparkles, Sliders, ShieldCheck, ShieldAlert, Cpu, HelpCircle } from 'lucide-react';
 
 interface HeaderProps {
   activeMode: 'auto_compile' | 'direct';
@@ -7,6 +7,7 @@ interface HeaderProps {
   isConfigured: boolean;
   maskedKey: string;
   onOpenSettings: () => void;
+  onOpenTutorial: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   isConfigured,
   maskedKey,
   onOpenSettings,
+  onOpenTutorial,
 }) => {
   return (
     <header className="h-14 border-b border-[#27272a] bg-[#111114] px-4 flex items-center justify-between sticky top-0 z-30">
@@ -84,6 +86,15 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Set OpenRouter Key</span>
             </>
           )}
+        </button>
+
+        <button
+          onClick={onOpenTutorial}
+          className="p-1.5 rounded-md text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 border border-transparent hover:border-[#27272a] transition-colors"
+          title="Decision Request Tutorial & Guide"
+          aria-label="Help & Tutorial"
+        >
+          <HelpCircle className="w-4 h-4" />
         </button>
 
         <button

@@ -76,6 +76,9 @@
   - [x] `ScoreEditor.tsx` (2-10 levels, ordered 0..N-1, rubric descriptions)
 - [x] Implement Drop-in Code & Telemetry Drawer:
   - [x] `CodeDrawer.tsx` (Compiled request JSON, raw response JSON, Python httpx snippet, TypeScript fetch snippet, cURL snippet)
+- [x] Implement Tutorial & Guide Modal:
+  - [x] `TutorialModal.tsx` (5-tab interactive walkthrough: Quickstart, Auto-Compile, Primitives, Direct Workbench, Anti-Bias Tuning)
+  - [x] Header question mark button trigger (`<HelpCircle />`)
 - [x] Implement Comparison & Consistency Views:
   - [x] `ComparisonCard.tsx` (Side-by-side comparison for 2 models evaluated on identical schema)
   - [x] Consistency Sweep display (Mean, standard deviation, stability index across 3x runs)

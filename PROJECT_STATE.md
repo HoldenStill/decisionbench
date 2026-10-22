@@ -65,3 +65,4 @@
 | 2026-10-15 | Backend tests | `pytest -v backend` | **14 / 14 Passed** (100%) | Verified WAL mode, Fernet encryption roundtrip, masking, Stage 1 compilation, Stage 2 decision execution, delta calculation, and scenario CRUD. |
 | 2026-10-15 | Frontend build | `npm run build` (tsc & vite) | **Passed** (0 errors) | TypeScript strict typecheck passed, production bundle emitted to `frontend/dist/`. |
 | 2026-10-15 | Container build & healthcheck | `docker build` & `docker run` | **Passed** (HTTP 200) | Multi-stage Docker build, PUID/PGID gosu privilege dropping, `/api/health` returning `status: healthy, journal_mode: wal`, and SPA `index.html` static serving verified. |
+| 2026-10-22 | Frontend build (Tutorial Modal) | `npm run build` (tsc & vite) | **Passed** (0 errors) | Implemented interactive Tutorial & Guide modal with top Header question mark trigger and multi-tab guidance. |
